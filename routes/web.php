@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Models\Materials;
 
 /** @var \Laravel\Lumen\Routing\Router $router */
 
@@ -21,3 +22,10 @@ $router->get('/', function () use ($router) {
 
 $router->post('/register', 'UserController@register');
 $router->post('/login', 'UserController@login');
+
+$router->post('/materials', 'MaterialsController@store');
+$router->get('/materials', 'MaterialsController@index');
+$router->get('/materials/{id}','MaterialsController@show');
+$router->put('/materials/{id}', 'MaterialsController@update');
+$router->delete('/materials/{id}', "MaterialsController@destroy");
+$router->post('/materials/{id}/register', 'MaterialsController@register');
