@@ -13,7 +13,11 @@ class Materials extends Model
      * @var array
      */
     protected $fillable = [
-        'nama_kelas', 'deskripsi_kelas','estimasi_selesai','jumlah_latihan', 'rating', 'pengguna_terdaftar', 'kategori',
+        'nama_kelas', 'deskripsi_kelas','estimasi_selesai','jumlah_latihan', 'rating', 'pengguna_terdaftar', 'kategori', 'gambar'
     ];
 
-} 
+    public function users (){
+        return $this->belongsToMany(User::class, 'material_user', 'materials_id', 'users_id');
+    }
+
+} ;

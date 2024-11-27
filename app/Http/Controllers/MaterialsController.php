@@ -9,6 +9,10 @@ use Symfony\Component\Mime\Message;
 class MaterialsController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function store(Request $request)
     {
         $this->validate($request,[
@@ -64,6 +68,13 @@ class MaterialsController extends Controller
 
     public function register($id){
         $class = Materials::findOrFail($id);
+        $user = auth()->user();
+
+        if($user->materials()->where('materials_id', $class->id)->exists()) {
+            return response()->json(['message' => 'Anda sudah terdaftar di kelas ini.'], 400);
+        }
+
+        $user->materials()->attach($class->id);
         $class->increment('pengguna_terdaftar');
         return response()->json(['message'=>'sukses mendaftar']);
     }

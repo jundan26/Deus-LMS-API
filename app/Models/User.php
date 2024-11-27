@@ -22,6 +22,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'username','email', 'password', 'token',
     ];
 
+    public function materials(){
+        return $this->belongsToMany(Materials::class, 'material_user', 'users_id', 'materials_id' );
+    }
+
     /**
      * The attributes excluded from the model's JSON form.
      *
