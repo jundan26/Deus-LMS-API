@@ -29,3 +29,4 @@ $router->get('/materials/{id}','MaterialsController@show');
 $router->put('/materials/{id}', 'MaterialsController@update');
 $router->delete('/materials/{id}', "MaterialsController@destroy");
 $router->post('/materials/{id}/register', 'MaterialsController@register');
+$router->get('/my-materials','MaterialsController@myMaterials');

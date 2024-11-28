@@ -79,4 +79,11 @@ class MaterialsController extends Controller
         return response()->json(['message'=>'sukses mendaftar']);
     }
 
+    public function myMaterials(){
+        $user = auth()->user();
+        $materials = $user->materials;
+
+        return response()->json($materials);
+    }
+
 } 
