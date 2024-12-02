@@ -20,4 +20,8 @@ class Materials extends Model
         return $this->belongsToMany(User::class, 'material_user', 'materials_id', 'users_id');
     }
 
+    public function notes(){
+        return $this->hasMany(Note::class);
+    }
+
 } ;

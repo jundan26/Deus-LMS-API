@@ -32,6 +32,10 @@ class CorsMiddleware
             $response->header($key, $value);
         }
 
+        if($request->user()){
+            $response->header('Authorization', 'Bearer' . $request->user()->token);
+        }
+
         return $response;
     }
 }
