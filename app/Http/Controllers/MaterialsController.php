@@ -12,7 +12,7 @@ use App\Models\Videos;
 use App\Models\Quiz;
 use App\Models\QuizOption;
 use App\Models\Note;
-
+use App\Models\Feedback;
 
 
 class MaterialsController extends Controller
@@ -31,6 +31,7 @@ class MaterialsController extends Controller
             'jumlah_latihan' => 'required|integer',
             'rating' => 'nullable|numeric|min:0|max:5',
             'kategori' => 'required|string',
+            'gambar' => 'required|url'
         ]);
 
         $class = Materials::create($request->all());
@@ -63,6 +64,7 @@ class MaterialsController extends Controller
             'jumlah_latihan' => 'sometimes|required|integer',
             'rating' => 'sometimes|nullable|numeric|min:0|max:5',
             'kategori' => 'sometimes|required|string',
+            'gambar'=>'required|url'
         ]);
         $class->update($request->all());
         return response()->json(['Message' => 'Data kelas berhasil diupdate.']);
@@ -108,6 +110,34 @@ class MaterialsController extends Controller
         ]);
         return response()->json($video, 201);
     }
+
+    public function updateVideo(Request $request, $id){
+        $this->validate($request, [
+            'judul_video' => 'required|string|max:255',
+            'jalur_file' => 'required|url'
+        ]);
+
+        $video = Videos::findOrFail($id);
+        $video->update([
+            'judul_video' => $request->judul_video,
+            'jalur_file' => $request->jalur_file
+        ]);
+
+        return response()->json($video, 200);
+    }
+
+    public function deleteVideo($id) {
+        $video = Videos::findOrFail($id);
+        $video->delete();
+    
+        return response()->json(['message' => 'Video berhasil dihapus'], 200);
+    }
+
+    public function getVideo($id) {
+        $video = Videos::findOrFail($id);
+        return response()->json($video, 200);
+    }
+
     public function createQuiz(Request $request, $id) {
         
         $this->validate($request, [
@@ -128,11 +158,50 @@ class MaterialsController extends Controller
             $quiz->options()->create([
                 'teks_jawaban' => $option['text'],
                 'jawaban_benar' => $option['is_correct'],
-                'quizzes_id' => $quiz->id // Pastikan menggunakan 'quizzes_id'
+                'quizzes_id' => $quiz->id
             ]);
         }
     
         return response()->json($quiz, 201);
+    }
+
+    public function updateQuiz(Request $request, $id) {
+        $this->validate($request, [
+            'pertanyaan' => 'required|string',
+            'options' => 'required|array|min:2|max:5',
+            'options.*.text' => 'required|string',
+            'options.*.is_correct' => 'required|boolean',
+        ]);
+    
+        $quiz = Quiz::findOrFail($id);
+        $quiz->update([
+            'pertanyaan' => $request->pertanyaan,
+        ]);
+    
+        $quiz->options()->delete();
+    
+        foreach ($request->options as $option) {
+            $quiz->options()->create([
+                'teks_jawaban' => $option['text'],
+                'jawaban_benar' => $option['is_correct'],
+                'quizzes_id' => $quiz->id
+            ]);
+        }
+    
+        return response()->json($quiz, 200);
+    }
+    
+    public function deleteQuiz($id) {
+        $quiz = Quiz::findOrFail($id);
+        $quiz->options()->delete(); 
+        $quiz->delete();
+    
+        return response()->json(['message' => 'Quiz berhasil dihapus'], 200);
+    }
+
+    public function getQuiz($id) {
+        $quiz = Quiz::with('options')->findOrFail($id); 
+        return response()->json($quiz, 200);
     }
     public function createNote(Request $request, $id) {
         $this->validate($request, [
@@ -198,4 +267,21 @@ class MaterialsController extends Controller
 
     return response()->json(['message' => 'Format not supported.'], 400);
 }
+
+public function createFeedback(Request $request)
+{
+    $this->validate($request, [
+        'quiz_id' => 'required|exists:quizzes,id',
+        'users_id'=>'required|exists:users,id',
+        'relevansi' => 'required|in:tidak,tak relevan dengan materi,ya masih relevan dengan materi,ya namun agak kurang relevan',
+        'saran_kritik' => 'nullable|string',
+    ]);
+    $feedback = Feedback::create($request->all());
+    return response()->json($feedback, 201);
 }
+public function getFeedback(Request $request)
+{
+    $feedbacks = Feedback::with('quiz')->get(); 
+    return response()->json($feedbacks);
+}
+};

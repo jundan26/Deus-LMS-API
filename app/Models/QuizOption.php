@@ -14,5 +14,8 @@ class QuizOption extends Model {
     protected $fillable = [
         'quizzes_id', 'teks_jawaban', 'jawaban_benar'];
     
+    public function quiz(){
+        return $this->belongsTo(Quiz::class, 'quizzes_id');
+    }
 
 }
